@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  linkActiveClass: 'active',
   routes: [
     {
       path: '/',
@@ -20,7 +21,7 @@ const router = createRouter({
     {
       path: '/file_browser',
       name: 'file_browser',
-      component:()=> import('../views/FileBrowser.vue'),
+      component:()=> import('../views/FileBrowserView.vue'),
     }
   ],
 })
