@@ -1,12 +1,13 @@
-import {createStore, createLogger} from 'vuex';
+import { createStore, createLogger } from 'vuex';
 
-import files from './modules/files.js';
+import filebrowser from './modules/filebrowser.js';
+
 const debug = true;
 
 export default createStore({
-  modules: {
-    files
-  },
-  strict:debug,
-  plugins:debug?[createLogger()]:[]
-})
+    modules: {
+        filebrowser,
+    },
+    strict: debug,
+    plugins: debug ? [createLogger()] : [],
+});

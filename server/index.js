@@ -5,6 +5,7 @@ const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
 
+const socketHandler = require('./io/index');
 const { connectToDB } = require('./middleware/db');
 
 require('dotenv').config(); // Load environment variables
@@ -32,12 +33,9 @@ app.get('*', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-    console.log('socket.io :: user connected');
-    socket.on('disconnect', () => {
-        console.log('socket.io :: user disconnected');
-    });
+    socketHandler(io, socket);
 });
+
 server.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });
-
