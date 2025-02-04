@@ -27,7 +27,7 @@ const actions = {
         });
     },
 
-    getFileToView: (context, file_path, file_name) => {
+    getFileToView: (context, file_path) => {
         context.commit('setIsLoading', true);
         console.log('store::getFileToView()', file_path);
         socket.emit('server:fileviewer:getfile', { file_path });

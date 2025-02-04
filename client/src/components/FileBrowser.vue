@@ -14,13 +14,14 @@
             >
                 <Directory :name="file.name"></Directory>
             </a>
-            <a v-else class="ctk-file-link" @click="this.getFileToView(file.fs_path)">
+            <a v-else class="ctk-file-link" @click="this.openFile(file.fs_path)">
                 <File :name="file.name"></File>
             </a>
         </li>
     </ul>
 </template>
 <script>
+import router from '@/router';
 import { mapState, mapActions } from 'vuex';
 import Directory from '@/components/FileBrowser/FiletypeDirectory.vue';
 import File from '@/components/FileBrowser/FiletypeFile.vue';
@@ -35,8 +36,10 @@ export default {
     methods: {
         ...mapActions({
             changePath: 'filebrowser/changePath',
-            getFileToView: 'fileviewer/getFileToView',
         }),
+        openFile: (file_path) => {
+            router.push({ name: 'view', params: { file: file_path } });
+        },
     },
     created() {
         this.$store.dispatch('filebrowser/bindEvents');

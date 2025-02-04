@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
+import FileBrowserView from '../views/FileBrowserView.vue';
+import FileViewerView from '../views/FileViewerView.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,7 +23,12 @@ const router = createRouter({
         {
             path: '/file_browser',
             name: 'file_browser',
-            component: () => import('../views/FileBrowserView.vue'),
+            component: FileBrowserView,
+        },
+        {
+            path: '/view/:file',
+            name: 'view',
+            component: FileViewerView,
         },
     ],
 });
