@@ -14,7 +14,6 @@ module.exports = (io, socket) => {
         try {
             let converter = new showdown.Converter();
             const file_contents = await fsp.readFile(path_to_file, 'utf-8');
-            console.log('socket.io : file_contents', file_contents);
             file_original_contents = file_contents;
             file_html = converter.makeHtml(file_contents);
         } catch (err) {

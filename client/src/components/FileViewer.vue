@@ -1,5 +1,15 @@
 <template>
-    <div class="w-100 h-100" v-html="file_html"></div>
+    <div class="row">
+        <div class="col-6 h-100">
+            <div v-show="is_loading">Loading file...</div>
+            <div id="js-fv-html" class="ctk-fv-wrapper" v-html="file_html"></div>
+        </div>
+        <div class="col-6 h-100 ctk-fv-analysis-wrapper">
+            <div class="w-100">
+                <textarea class="form-control" id="js-fv-prompt"></textarea>
+            </div>
+        </div>
+    </div>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
@@ -13,6 +23,30 @@ export default {
     }),
     methods: {
         ...mapActions({}),
+        initialize_viewer_actions() {
+            this.$nextTick(() => {
+                const viewerEl = document.querySelector('#js-fv-html');
+                const els = viewerEl.querySelectorAll('p');
+
+                console.log('initialize_viewer_actions', els);
+                for (const el of els) {
+                    el.classList.add('ctk-fv-paragraph');
+                    el.addEventListener('mouseover', () => {
+                        el.classList.add('ctk-fv-paragraph-hover');
+                    });
+                    el.addEventListener('mouseout', () => {
+                        el.classList.remove('ctk-fv-paragraph-hover');
+                    });
+                }
+            });
+        },
+    },
+    watch: {
+        file_html(newVal, oldVal) {
+            if (newVal !== oldVal) {
+                this.initialize_viewer_actions();
+            }
+        },
     },
     created() {
         const route = useRoute();
@@ -21,4 +55,25 @@ export default {
     },
 };
 </script>
-<style></style>
+<style>
+.ctk-fv-wrapper {
+}
+
+.ctk-fv-wrapper p {
+    margin: 5px;
+    padding: 5px;
+    border: 1px solid white;
+}
+
+.ctk-fv-wrapper p.ctk-fv-paragraph-hover {
+    border: 1px solid green;
+}
+
+.ctk-fv-wrapper p.ctk-fv-paragraph {
+    cursor: pointer;
+}
+
+.ctk-ft-analysis-wrapper {
+    padding: 10px;
+}
+</style>
