@@ -5,6 +5,7 @@ const path = require('path');
 const xdg = require('@folder/xdg');
 
 const SettingsModel = require('../models/settings');
+const PromptsModel = require('../models/prompts');
 
 const config_dir_name = 'critik';
 const sqlite_filename = 'critik.sqlite3';
@@ -48,6 +49,7 @@ async function connectToDB(req, res, next) {
 
         db.models = {};
         db.models.settings = new SettingsModel(db);
+        db.models.prompts = new PromptsModel(db);
 
         req.db = db;
         next();
