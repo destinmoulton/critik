@@ -2,7 +2,7 @@ const fsp = require('fs').promises;
 const os = require('os');
 const path = require('path');
 const showdown = require('showdown');
-module.exports = (io, socket) => {
+module.exports = (io, socket, db) => {
     socket.on('server:fileviewer:getfile', async (params) => {
         console.log('socket.io : server:fileviewer:getfile', params);
         const path_to_file = params.file_path;

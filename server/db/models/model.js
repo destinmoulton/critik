@@ -4,6 +4,30 @@ class Model {
     _create_query;
     _primary_key;
 
+    /**
+     * This will setup the model after construction.
+     *
+     * Need this to be separate as constructor cannot be async.
+     *
+     * @returns {Promise<void>}
+     */
+    async init() {
+        try {
+            await this._initializeTable();
+            await this._extraInitialization();
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    /**
+     * A child method that will be called in case children need it.
+     * @returns {Promise<void>}
+     * @private
+     */
+    async _extraInitialization() {
+    }
+
     async _initializeTable() {
         if (!await this._doesTableExist()) {
             return await this._createTable();
@@ -23,7 +47,6 @@ class Model {
         if (!await this._doesTableExist()) {
             throw new Error(`ERROR::model.js::createTable() :  Cannot create table '${this._table_name}'`);
         }
-        return true;
     }
 
     async getAllRows(orderBy, orderDirection) {

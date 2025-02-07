@@ -6,7 +6,7 @@ const express = require('express');
 const { Server } = require('socket.io');
 
 const socketHandler = require('./io/index');
-const { connectToDB } = require('./middleware/db');
+const { connectToDB } = require('./db/index');
 
 require('dotenv').config(); // Load environment variables
 
@@ -21,7 +21,7 @@ const clientBuildPath = path.join(__dirname, '../client/dist'); // Adjust path i
 app.use(express.static(clientBuildPath));
 
 // Setup the middleware db (req.db)
-app.use(connectToDB);
+const db = connectToDB();
 
 // API Routes
 const apiRoutes = require('./routes/api');
@@ -33,7 +33,7 @@ app.get('*', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-    socketHandler(io, socket);
+    socketHandler(io, socket, db);
 });
 
 server.listen(port, () => {

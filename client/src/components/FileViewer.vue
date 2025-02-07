@@ -5,8 +5,10 @@
             <div id="js-fv-html" class="ctk-fv-wrapper" v-html="file_html"></div>
         </div>
         <div class="col-6 h-100 ctk-fv-analysis-wrapper">
-            <div class="w-100">
-                <textarea class="form-control" id="js-fv-prompt"></textarea>
+            <div class="container">
+                <div class="row">
+                    <PromptEditor></PromptEditor>
+                </div>
             </div>
         </div>
     </div>
@@ -14,9 +16,10 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import { useRoute } from 'vue-router';
+import PromptEditor from '@/components/FileViewer/PromptEditor.vue';
 
 export default {
-    components: {},
+    components: { PromptEditor },
     computed: mapState({
         file_html: (state) => state.fileviewer.file_html,
         is_loading: (state) => state.fileviewer.is_loading,

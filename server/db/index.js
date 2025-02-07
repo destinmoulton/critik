@@ -4,8 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const xdg = require('@folder/xdg');
 
-const SettingsModel = require('../models/settings');
-const PromptsModel = require('../models/prompts');
+const SettingsModel = require('./models/settings');
+const PromptsModel = require('./models/prompts');
 
 const config_dir_name = 'critik';
 const sqlite_filename = 'critik.sqlite3';
@@ -32,7 +32,7 @@ async function _initConfigDirectory(dbpath) {
     }
 }
 
-async function connectToDB(req, res, next) {
+async function connectToDB() {
     // Get the xdg configured directories
     const dirs = xdg();
 
@@ -51,13 +51,10 @@ async function connectToDB(req, res, next) {
         db.models.settings = new SettingsModel(db);
         db.models.prompts = new PromptsModel(db);
 
-        req.db = db;
-        next();
+        return db;
     } catch (error) {
-        console.error(error, 'database filename: ' + dbfilename);
-        return res.status(500).send(error.message);
+        throw new Error('ERROR: connectToDB() :: Failed to connect to db. ' + dbfilename);
     }
-
 }
 
 module.exports = { connectToDB };

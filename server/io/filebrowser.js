@@ -1,7 +1,7 @@
 const { promises: fsp } = require('fs');
 const os = require('os');
 const path = require('path');
-module.exports = (io, socket) => {
+module.exports = (io, socket, db) => {
     socket.on('server:filebrowser:list', async (params) => {
         console.log('socket.io : server:filebrowser:list', params);
         let show_hidden = false;
