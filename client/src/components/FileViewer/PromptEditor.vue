@@ -4,7 +4,7 @@
             <FontAwesomeIcon :icon="faFolderOpen" />
             Browse
         </button>
-        <button class="btn btn-secondary m-1">
+        <button class="btn btn-secondary m-1" @click="clonePrompt">
             <FontAwesomeIcon :icon="faClone" />
             Copy Prompt
         </button>
@@ -40,6 +40,7 @@ export default {
     methods: {
         ...mapActions({
             savePrompt: 'prompts/savePrompt',
+            clonePrompt: 'prompts/clonePrompt',
         }),
     },
     watch: {},

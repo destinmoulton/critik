@@ -1,6 +1,7 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router';
 //import HelloWorld from './components/HelloWorld.vue'
+import Notifications from '@/components/Notifications.vue';
 </script>
 
 <template>
@@ -34,8 +35,12 @@ import { RouterLink, RouterView } from 'vue-router';
             </div>
         </nav>
     </header>
-
-    <RouterView />
+    <div class="container">
+        <RouterView />
+    </div>
+    <div>
+        <Notifications />
+    </div>
 </template>
 
 <style scoped>

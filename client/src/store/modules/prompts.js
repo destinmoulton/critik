@@ -67,6 +67,17 @@ const actions = {
             method: method,
         });
     },
+    clonePrompt: (context) => {
+        console.log('clonePrompt called');
+        context.dispatch(
+            'notifications/addNotification',
+            {
+                type: 'success',
+                msg: 'Created copy of prompt.',
+            },
+            { root: true },
+        );
+    },
 };
 const mutations = {
     setPromptData(state, data) {
