@@ -9,7 +9,7 @@
             :key="notification.id"
             :data-ctk-notification-id="notification.id"
         >
-            <div class="toast-header">
+            <div class="toast-header justify-content-end">
                 <button
                     type="button"
                     class="btn-close"
@@ -37,7 +37,7 @@ export default {
                 var toastElList = [].slice.call(document.querySelectorAll('.toast'));
                 console.log('displayToasts', toastElList);
                 const config = {
-                    autohide: true,
+                    autohide: false,
                     delay: 8000,
                 };
                 for (const toastEl of toastElList) {
