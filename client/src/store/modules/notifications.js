@@ -15,6 +15,19 @@ const actions = {
         context.commit('addNotification', notification);
     },
 
+    error: (context, message) => {
+        context.commit('addNotification', {
+            msg: message,
+            type: 'error',
+        });
+    },
+    success: (context, message) => {
+        context.commit('addNotification', {
+            msg: message,
+            type: 'success',
+        });
+    },
+
     removeNotification: (context, id) => {
         context.commit('removeNotification', id);
     },
@@ -22,9 +35,15 @@ const actions = {
 const mutations = {
     addNotification(state, data) {
         console.log('addNotification', data);
+        let msg = '';
+        if (Object.hasOwn(data, 'msg')) {
+            msg = data.msg;
+        } else if (Object.hasOwn(data, 'message')) {
+            msg = data.message;
+        }
         const notification = {
             id: crypto.randomUUID(),
-            msg: data.msg,
+            msg,
             type: data.type,
         };
         state.notifications.push(notification);

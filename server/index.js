@@ -21,7 +21,8 @@ const clientBuildPath = path.join(__dirname, '../client/dist'); // Adjust path i
 app.use(express.static(clientBuildPath));
 
 // Setup the middleware db (req.db)
-const db = connectToDB();
+let db = {};
+connectToDB().then(dbmodels => db = dbmodels);
 
 // API Routes
 const apiRoutes = require('./routes/api');

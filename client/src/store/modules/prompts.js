@@ -3,17 +3,18 @@ import { socket } from '@/socket';
 const state = () => ({
     is_loading: false,
     is_saving: false,
+    has_changed: false,
     current_prompt: {
         id: 0,
         type: 'user',
-        content: 'test',
+        text: 'test',
     },
     has_error: false,
     error: '',
 });
 
 const actions = {
-    bindEvents: ({ commit }) => {
+    bindEvents: ({ commit, dispatch }) => {
         socket.on('client:prompts:got:single', (res) => {
             commit('setIsLoading', false);
             if (res.status === 'success') {
@@ -29,8 +30,17 @@ const actions = {
             }
         });
         socket.on('client:prompts:save_complete', (res) => {
+            console.log('client:prompts:save_complete', res);
+            commit('setIsSaving', false);
             if (res.status === 'success') {
+                commit('setHasChanged', false);
                 commit('setPromptData', res);
+            } else {
+                commit('setHasError', true);
+                commit('setError', res.error);
+                dispatch('notifications/error', `Failed to save prompt. ${res.error}`, {
+                    root: true,
+                });
             }
         });
     },
@@ -69,29 +79,31 @@ const actions = {
     },
     clonePrompt: (context) => {
         console.log('clonePrompt called');
-        context.dispatch(
-            'notifications/addNotification',
-            {
-                type: 'success',
-                msg: 'Created copy of prompt.',
-            },
-            { root: true },
-        );
+        context.dispatch('notifications/success', 'Created copy of prompt.', { root: true });
     },
 };
 const mutations = {
     setPromptData(state, data) {
-        console.log('store:fileviewer setFileData() mutation called', data);
-        state.current_prompt = data.prompt;
+        state.current_prompt = {
+            id: data.prompt.id,
+            type: data.prompt.prompt_type,
+            text: data.prompt.prompt_text,
+        };
     },
     setIsLoading(state, isLoading) {
         state.is_loading = isLoading;
+    },
+    setIsSaving(state, isSaving) {
+        state.is_saving = isSaving;
     },
     setHasError(state, hasError) {
         state.has_error = hasError;
     },
     setError(state, error) {
         state.error = error;
+    },
+    setHasChanged(state, hasChanged) {
+        state.has_changed = hasChanged;
     },
 };
 

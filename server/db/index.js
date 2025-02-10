@@ -4,8 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const xdg = require('@folder/xdg');
 
-const SettingsModel = require('./models/settings');
-const PromptsModel = require('./models/prompts');
+const SettingsModel = require('./models/settings_model');
+const PromptsModel = require('./models/prompts_model');
 
 const config_dir_name = 'critik';
 const sqlite_filename = 'critik.sqlite3';
@@ -41,15 +41,16 @@ async function connectToDB() {
     const dbfilename = path.join(dbpath, sqlite_filename);
     try {
         _initConfigDirectory(dbpath);
-        db = await sqlite.open({
+        const sqlitedb = await sqlite.open({
             filename: dbfilename,
             driver: sqlite3.Database
         });
-
-
+        let db = {};
         db.models = {};
-        db.models.settings = new SettingsModel(db);
-        db.models.prompts = new PromptsModel(db);
+        db.models.settings = new SettingsModel(sqlitedb);
+        db.models.settings.init();
+        db.models.prompts = new PromptsModel(sqlitedb);
+        db.models.prompts.init();
 
         return db;
     } catch (error) {

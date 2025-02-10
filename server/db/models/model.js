@@ -50,12 +50,9 @@ class Model {
     }
 
     async getAllRows(orderBy, orderDirection) {
-        if (undefined == orderBy || undefined == orderDirection) {
-            throw new Error(`ERROR::model.js::getAllRows() : Must include an orderBy and orderDirection parameter.`);
-        }
-        return this._db.get(`SELECT *
-                             FROM ${this._table_name}
-                             ORDER BY ${orderBy} ${orderDirection}`);
+        return await this._db.get(`SELECT *
+                                   FROM ${this._table_name}
+                                   ORDER BY ${orderBy} ${orderDirection}`);
     }
 
     async getSingleById(id) {
@@ -63,9 +60,9 @@ class Model {
             throw new Error(`ERROR::model.js::getSingleById() : No primary key set for model. Table: '${this._table_name}'`);
         }
 
-        return this._db.get(`SELECT *
-                             FROM ${this._table_name}
-                             WHERE ${this._primary_key} = ?`, id);
+        return await this._db.get(`SELECT *
+                                   FROM ${this._table_name}
+                                   WHERE ${this._primary_key} = ?`, id);
     }
 
     async getRowById(id) {
@@ -73,20 +70,21 @@ class Model {
             throw new Error(`ERROR::model.js::getRowById() : No primary key set for model. Table: '${this._table_name}'`);
         }
 
-        return this._db.get(`SELECT *
-                             FROM ${this._table_name}
-                             WHERE ${this._primary_key} = ?`, id);
+        return await this._db.get(`SELECT *
+                                   FROM ${this._table_name}
+                                   WHERE ${this._primary_key} = ?`, id);
     }
 
     async insertRow(row) {
-        if (undefined == Object.keys(row).length == 0) {
-            throw new Error(`ERROR::model.js::insertRow() : No row properties are set for insertion`);
+        if (Object.keys(row).length == 0) {
+            const err = `ERROR::model.js::insertRow() : No row properties are set for insertion`;
+            return { last_id: 0, err };
         }
 
         let insmap = {};
         let columns = [];
         let colids = [];
-        for (const columnName of row) {
+        for (const columnName in row) {
             const dt = row[columnName];
             const colkey = ':' + columnName;
 
@@ -100,8 +98,11 @@ class Model {
 
         const query = `INSERT INTO ${this._table_name}(${colstr})
                        VALUES (${valstr})`;
-        const res = await db.run(query, insmap);
-        return res.lastID;
+        const res = await this._db.run(query, insmap);
+        if (Object.hasOwn(res, 'last_id') && 0 === res.last_id) {
+            return { last_id: 0, err: 'Failed to insert row.' };
+        }
+        return { last_id: res.lastID, err: false };
     }
 
     async updateRowById(id, data) {
@@ -118,25 +119,27 @@ class Model {
         // The primary key id
         const pkeyid = ':' + this._primary_key;
         upmap[pkeyid] = id;
-        for (const key of data) {
+        for (const key in data) {
             const dt = data[key];
 
-            upmap[':' + key] = dt;
-            upparts.push(`${key} = ?`);
+            const colid = ':' + key;
+            upmap[colid] = dt;
+            upparts.push(`${key} = ${colid}`);
         }
 
         // Build the update string
         const upstring = upparts.join(', ');
 
-        try {
-            const query = `UPDATE ${this._table_name}
-                           SET ${upstring}
-                           WHERE ${this._primary_key} = ${pkeyid}`;
+        const query = `UPDATE ${this._table_name}
+                       SET ${upstring}
+                       WHERE ${this._primary_key} = ${pkeyid}`;
 
-            const res = await db.run(query, upmap);
-        } catch (err) {
-            throw new Error(`ERROR::model.js::updateRowById() : Failed to update row with id: ${id} ${err}`);
+        const res = await this._db.run(query, upmap);
+        if (0 === res.changes) {
+            const err = `ERROR::model.js::updateRowById() : Failed to update row`;
+            return { changes: 0, err };
         }
+        return { changes: res.changes, err: false };
     }
 
     hasPrimaryKey() {

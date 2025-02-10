@@ -17,7 +17,8 @@
         <textarea
             class="form-control"
             id="js-fv-prompt"
-            v-model="current_prompt.content"
+            v-model="current_prompt.text"
+            :disabled="is_saving"
         ></textarea>
     </div>
     <div>
@@ -36,6 +37,7 @@ export default {
     components: { FontAwesomeIcon },
     computed: mapState({
         current_prompt: (state) => state.prompts.current_prompt,
+        is_saving: (state) => state.prompts.is_saving,
     }),
     methods: {
         ...mapActions({
