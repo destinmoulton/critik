@@ -16,10 +16,11 @@ const state = () => ({
 const actions = {
     bindEvents: ({ commit, dispatch }) => {
         socket.on('client:prompts:got:single', (res) => {
+            console.log('client:prompts:got:single', res);
             commit('setIsLoading', false);
             if (res.status === 'success') {
                 commit('setHasError', false);
-                commit('setFileData', res);
+                commit('setPromptData', res.prompt);
             } else {
                 commit('setHasError', true);
                 if (Object.hasOwn(res, 'error')) {
@@ -34,7 +35,7 @@ const actions = {
             commit('setIsSaving', false);
             if (res.status === 'success') {
                 commit('setHasChanged', false);
-                commit('setPromptData', res);
+                commit('setPromptData', res.prompt);
             } else {
                 commit('setHasError', true);
                 commit('setError', res.error);
@@ -85,9 +86,9 @@ const actions = {
 const mutations = {
     setPromptData(state, data) {
         state.current_prompt = {
-            id: data.prompt.id,
-            type: data.prompt.prompt_type,
-            text: data.prompt.prompt_text,
+            id: data.id,
+            type: data.prompt_type,
+            text: data.prompt_text,
         };
     },
     setIsLoading(state, isLoading) {

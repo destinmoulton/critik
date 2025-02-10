@@ -17,6 +17,14 @@ class PromptsModel extends Model {
 
     }
 
+    async getSingleMostRecent() {
+        const query = `SELECT *
+                       FROM ${this._table_name}
+                       ORDER BY created DESC LIMIT 1;`;
+
+        return await this._db.get(query);
+    }
+
 }
 
 module.exports = PromptsModel;

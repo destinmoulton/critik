@@ -48,6 +48,8 @@ export default {
     watch: {},
     created() {
         this.$store.dispatch('prompts/bindEvents');
+        // Try to load the most recent prompt
+        this.$store.dispatch('prompts/getRecentPrompt');
     },
     setup() {
         return {

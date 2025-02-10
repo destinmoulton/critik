@@ -20,6 +20,19 @@ module.exports = (io, socket, db) => {
 
         socket.emit('client:prompts:got:single', { status });
     });
+    socket.on('server:prompts:get:single_most_recent', async () => {
+        console.log('socket.io : server:prompts:get:single_most_recent');
+        let recent = await db.models.prompts.getSingleMostRecent();
+        if (undefined === recent) {
+            // Set blank one
+            recent = {
+                id: 0,
+                prompt_type: 'user',
+                prompt_text: ''
+            };
+        }
+        socket.emit('client:prompts:got:single', { status: 'success', prompt: recent });
+    });
     socket.on('server:prompts:save', async (params) => {
         console.log('socket.io : server:prompts:save', params);
 

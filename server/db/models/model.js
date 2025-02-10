@@ -142,6 +142,7 @@ class Model {
         return { changes: res.changes, err: false };
     }
 
+
     hasPrimaryKey() {
         return this._primary_key !== undefined && this._primary_key !== null;
     }
