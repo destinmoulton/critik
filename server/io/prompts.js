@@ -16,10 +16,12 @@ module.exports = (io, socket, db) => {
         socket.emit('client:prompts:got:single', { status });
     });
     socket.on('server:prompts:get:all_prompts', async (params) => {
-        console.log('socket.io : server:prompts:get:single_by_id', params);
+        console.log('socket.io : server:prompts:get:all_prompts', params);
 
         let prompts = await db.models.prompts.getAllRows(params.order_by, params.order);
-        if (!Array.isArray(prompts)) {
+        if (null === prompts || undefined === prompts) {
+            prompts = [];
+        } else if (!Array.isArray(prompts)) {
             prompts = [prompts];
         }
         socket.emit('client:prompts:got:all_prompts', { status: 'success', prompts });
@@ -74,5 +76,11 @@ module.exports = (io, socket, db) => {
         socket.emit('server:prompts:get:single_most_recent', {
             status
         });
+    });
+    socket.on('server:prompts:delete:single_by_id', async (params) => {
+
+        const res = await db.models.prompts.deleteRowById(params.prompt_id);
+        const prompt_id = res;
+        socket.emit('client:prompts:delete_complete', { prompt_id });
     });
 };

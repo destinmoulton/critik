@@ -19,10 +19,21 @@
                     ></button>
                 </div>
                 <div class="modal-body">
+                    <div
+                        class="card text-center"
+                        v-if="all_prompts.length === 0"
+                        :key="all_prompts.length"
+                    >
+                        No prompts found.
+                    </div>
                     <div class="card col-4" v-for="prompt in all_prompts" :key="prompt.id">
                         <div class="card-body">
                             <p class="card-text">{{ prompt.prompt_text }}</p>
-                            <button class="btn btn-secondary btn-sm card-link">
+                            <button
+                                class="btn btn-secondary btn-sm card-link"
+                                :data-ctk-prompt-id="prompt.id"
+                                @click="confirmDeletePrompt"
+                            >
                                 <FontAwesomeIcon :icon="faTrashCan" />
                                 Delete
                             </button>
@@ -50,15 +61,25 @@ export default {
     methods: {
         ...mapActions({
             toggleIsPromptModalVisible: 'prompts/togglePromptModalVisible',
+            deletePrompt: 'prompts/deletePrompt',
         }),
+        confirmDeletePrompt(e) {
+            const prompt_id = e.target.getAttribute('data-ctk-prompt-id');
+
+            const resp = confirm('Are you sure you want to delete this prompt?');
+            if (resp) {
+                this.deletePrompt(prompt_id);
+            }
+        },
     },
     watch: {
         is_prompt_modal_visible(newVal, oldVal) {
             console.log('watch:is_prompt_modal_visible', newVal);
             if (newVal !== oldVal) {
-                var myModalEl = document.querySelector('#js-prompt-browser-modal');
-                var modal = Modal.getOrCreateInstance(myModalEl); // Returns a Bootstrap modal instance
+                let myModalEl = document.querySelector('#js-prompt-browser-modal');
+                let modal = Modal.getOrCreateInstance(myModalEl); // Returns a Bootstrap modal instance
                 if (true === newVal) {
+                    this.$store.dispatch('prompts/getAllPrompts');
                     modal.show();
                 } else {
                     modal.hide();
@@ -66,9 +87,7 @@ export default {
             }
         },
     },
-    created() {
-        this.$store.dispatch('prompts/getAllPrompts');
-    },
+    created() {},
     setup() {
         return {
             faTrashCan,

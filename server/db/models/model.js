@@ -142,6 +142,13 @@ class Model {
         return { changes: res.changes, err: false };
     }
 
+    async deleteRowById(id) {
+        const query = `DELETE
+                       FROM ${this._table_name}
+                       WHERE ${this._primary_key} = ?`;
+        const res = await this._db.run(query, id);
+        return res.lastID;
+    }
 
     hasPrimaryKey() {
         return this._primary_key !== undefined && this._primary_key !== null;

@@ -1,14 +1,15 @@
 import { socket } from '@/socket';
 
+const NEW_PROMPT = {
+    id: 0,
+    type: 'user',
+    text: '',
+};
 const state = () => ({
     is_loading: false,
     is_saving: false,
     has_changed: false,
-    current_prompt: {
-        id: 0,
-        type: 'user',
-        text: 'test',
-    },
+    current_prompt: NEW_PROMPT,
     has_error: false,
     error: '',
     is_prompt_modal_visible: false,
@@ -17,7 +18,7 @@ const state = () => ({
 });
 
 const actions = {
-    bindEvents: ({ commit, dispatch }) => {
+    bindEvents: ({ commit, dispatch, state }) => {
         socket.on('client:prompts:got:single', (res) => {
             console.log('client:prompts:got:single', res);
             commit('setIsLoading', false);
@@ -50,7 +51,15 @@ const actions = {
 
         socket.on('client:prompts:got:all_prompts', (res) => {
             console.log('client:prompts:got:all_prompts', res);
+            console.log('client:prompts:got:all_prompts', res);
             commit('setAllPrompts', res.prompts);
+        });
+        socket.on('client:prompts:delete_complete', (res) => {
+            console.log('client:prompts:delete_complete', res);
+            if (res.prompt_id === state.current_prompt.id) {
+                commit('setPromptData', NEW_PROMPT);
+            }
+            commit('setRemovePrompt', res.prompt_id);
         });
     },
 
@@ -97,6 +106,9 @@ const actions = {
     togglePromptModalVisible: ({ commit, state }) => {
         commit('setIsPromptModalVisible', !state.is_prompt_modal_visible);
     },
+    deletePrompt(context, prompt_id) {
+        socket.emit('server:prompts:delete:single_by_id', { prompt_id });
+    },
 };
 const mutations = {
     setPromptData(state, data) {
@@ -125,10 +137,17 @@ const mutations = {
         state.is_loading_all_prompts = isLoadingAllPrompts;
     },
     setAllPrompts(state, prompts) {
-        state.all_prompts = prompts;
+        if (null === prompts) {
+            state.all_prompts = [];
+        } else {
+            state.all_prompts = prompts;
+        }
     },
     setIsPromptModalVisible(state, isModalVisible) {
         state.is_prompt_modal_visible = isModalVisible;
+    },
+    setRemovePrompt(state, prompt_id) {
+        state.all_prompts = state.all_prompts.filter((prompt) => prompt.id !== prompt_id);
     },
 };
 
