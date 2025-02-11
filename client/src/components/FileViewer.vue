@@ -27,7 +27,9 @@ export default {
         is_loading: (state) => state.fileviewer.is_loading,
     }),
     methods: {
-        ...mapActions({}),
+        ...mapActions({
+            setText: 'ollama/setText',
+        }),
         initialize_viewer_actions() {
             const viewerEl = document.querySelector('#js-fv-html');
             const header = document.querySelector('#js-ctk-header');
@@ -48,6 +50,7 @@ export default {
                     el.addEventListener('click', (e) => {
                         this.deactivate_all_paragraphs();
                         e.target.classList.add('ctk-fv-paragraph-active');
+                        this.setText(e.target.innerText);
                     });
                 }
             });
