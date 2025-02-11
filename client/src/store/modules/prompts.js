@@ -11,6 +11,9 @@ const state = () => ({
     },
     has_error: false,
     error: '',
+    is_prompt_modal_visible: false,
+    all_prompts: [],
+    is_loading_all_prompts: false,
 });
 
 const actions = {
@@ -43,6 +46,11 @@ const actions = {
                     root: true,
                 });
             }
+        });
+
+        socket.on('client:prompts:got:all_prompts', (res) => {
+            console.log('client:prompts:got:all_prompts', res);
+            commit('setAllPrompts', res.prompts);
         });
     },
 
@@ -82,6 +90,13 @@ const actions = {
         console.log('clonePrompt called');
         context.dispatch('notifications/success', 'Created copy of prompt.', { root: true });
     },
+    getAllPrompts: (context) => {
+        context.commit('setIsLoadingAllPrompts', true);
+        socket.emit('server:prompts:get:all_prompts', { order_by: 'created', order: 'desc' });
+    },
+    togglePromptModalVisible: ({ commit, state }) => {
+        commit('setIsPromptModalVisible', !state.is_prompt_modal_visible);
+    },
 };
 const mutations = {
     setPromptData(state, data) {
@@ -105,6 +120,15 @@ const mutations = {
     },
     setHasChanged(state, hasChanged) {
         state.has_changed = hasChanged;
+    },
+    setIsLoadingAllPrompts(state, isLoadingAllPrompts) {
+        state.is_loading_all_prompts = isLoadingAllPrompts;
+    },
+    setAllPrompts(state, prompts) {
+        state.all_prompts = prompts;
+    },
+    setIsPromptModalVisible(state, isModalVisible) {
+        state.is_prompt_modal_visible = isModalVisible;
     },
 };
 

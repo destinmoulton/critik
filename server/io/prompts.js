@@ -15,10 +15,14 @@ module.exports = (io, socket, db) => {
 
         socket.emit('client:prompts:got:single', { status });
     });
-    socket.on('server:prompts:get:multiple', async (params) => {
+    socket.on('server:prompts:get:all_prompts', async (params) => {
         console.log('socket.io : server:prompts:get:single_by_id', params);
 
-        socket.emit('client:prompts:got:single', { status });
+        let prompts = await db.models.prompts.getAllRows(params.order_by, params.order);
+        if (!Array.isArray(prompts)) {
+            prompts = [prompts];
+        }
+        socket.emit('client:prompts:got:all_prompts', { status: 'success', prompts });
     });
     socket.on('server:prompts:get:single_most_recent', async () => {
         console.log('socket.io : server:prompts:get:single_most_recent');

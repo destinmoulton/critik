@@ -1,6 +1,6 @@
 <template>
     <div class="">
-        <button class="btn btn-secondary m-1">
+        <button class="btn btn-secondary m-1" @click="toggleIsPromptModalVisible">
             <FontAwesomeIcon :icon="faFolderOpen" />
             Browse
         </button>
@@ -43,6 +43,7 @@ export default {
         ...mapActions({
             savePrompt: 'prompts/savePrompt',
             clonePrompt: 'prompts/clonePrompt',
+            toggleIsPromptModalVisible: 'prompts/togglePromptModalVisible',
         }),
     },
     watch: {},
