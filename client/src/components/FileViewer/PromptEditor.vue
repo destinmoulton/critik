@@ -24,9 +24,19 @@
             ></textarea>
         </div>
         <div>
-            <button class="btn btn-secondary m-1" @click="savePrompt">
-                <FontAwesomeIcon :icon="faFloppyDisk" />
-            </button>
+            <div class="input-group">
+                <button class="btn btn-secondary m-1" @click="savePrompt">
+                    <FontAwesomeIcon :icon="faFloppyDisk" />
+                </button>
+                <select class="form-select" v-model="active_model" @change="handleSelectModel">
+                    <option v-for="model in models" :value="model.name" :key="model.name">
+                        {{ model.name }}
+                    </option>
+                </select>
+                <button class="btn btn-secondary m-1" @click="chat">
+                    <FontAwesomeIcon :icon="faCommentDots" />
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -34,7 +44,12 @@
 import { mapState, mapActions } from 'vuex';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faClone } from '@fortawesome/free-regular-svg-icons';
-import { faPlus, faFolderOpen, faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
+import {
+    faPlus,
+    faFolderOpen,
+    faFloppyDisk,
+    faCommentDots,
+} from '@fortawesome/free-solid-svg-icons';
 
 export default {
     components: { FontAwesomeIcon },
@@ -42,6 +57,8 @@ export default {
         current_prompt: (state) => state.prompts.current_prompt,
         is_saving: (state) => state.prompts.is_saving,
         is_loading_single: (state) => state.prompts.is_loading_single,
+        models: (state) => state.ollama.models,
+        active_model: (state) => state.ollama.active_model,
     }),
     methods: {
         ...mapActions({
@@ -49,7 +66,12 @@ export default {
             clonePrompt: 'prompts/clonePrompt',
             toggleIsPromptModalVisible: 'prompts/togglePromptModalVisible',
             newPrompt: 'prompts/newPrompt',
+            chat: 'ollama/chat',
+            changeModel: 'ollama/changeModel',
         }),
+        handleSelectModel(e) {
+            this.changeModel(e.target.value);
+        },
     },
     watch: {},
     created() {
@@ -63,6 +85,7 @@ export default {
             faPlus,
             faFolderOpen,
             faFloppyDisk,
+            faCommentDots,
         };
     },
 };

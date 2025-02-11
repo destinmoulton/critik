@@ -9,6 +9,9 @@
                 <div class="row">
                     <PromptEditor></PromptEditor>
                 </div>
+                <div class="row">
+                    <ChatResponse></ChatResponse>
+                </div>
             </div>
         </div>
     </div>
@@ -19,9 +22,10 @@ import { mapState, mapActions } from 'vuex';
 import { useRoute } from 'vue-router';
 import PromptEditor from '@/components/FileViewer/PromptEditor.vue';
 import PromptBrowserModal from '@/components/FileViewer/PromptBrowserModal.vue';
+import ChatResponse from '@/components/FileViewer/ChatResponse.vue';
 
 export default {
-    components: { PromptBrowserModal, PromptEditor },
+    components: { ChatResponse, PromptBrowserModal, PromptEditor },
     computed: mapState({
         file_html: (state) => state.fileviewer.file_html,
         is_loading: (state) => state.fileviewer.is_loading,

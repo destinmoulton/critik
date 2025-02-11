@@ -10,8 +10,10 @@
   "license": "MIT",
   "dependencies": {
     "@folder/xdg": "^4.0.1",
+    "@lmstudio/sdk": "^0.4.7",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "ollama": "^0.5.13",
     "showdown": "^2.1.0",
     "socket.io": "^4.8.1",
     "sqlite": "^5.1.1",
