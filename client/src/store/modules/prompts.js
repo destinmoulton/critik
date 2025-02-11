@@ -2,14 +2,14 @@ import { socket } from '@/socket';
 
 const NEW_PROMPT = {
     id: 0,
-    type: 'user',
-    text: '',
+    prompt_type: 'user',
+    prompt_text: '',
 };
 const state = () => ({
-    is_loading: false,
+    is_loading_single: false,
     is_saving: false,
     has_changed: false,
-    current_prompt: NEW_PROMPT,
+    current_prompt: { ...NEW_PROMPT }, // clone object
     has_error: false,
     error: '',
     is_prompt_modal_visible: false,
@@ -21,7 +21,7 @@ const actions = {
     bindEvents: ({ commit, dispatch, state }) => {
         socket.on('client:prompts:got:single', (res) => {
             console.log('client:prompts:got:single', res);
-            commit('setIsLoading', false);
+            commit('setIsLoadingSingle', false);
             if (res.status === 'success') {
                 commit('setHasError', false);
                 commit('setPromptData', res.prompt);
@@ -51,15 +51,22 @@ const actions = {
 
         socket.on('client:prompts:got:all_prompts', (res) => {
             console.log('client:prompts:got:all_prompts', res);
-            console.log('client:prompts:got:all_prompts', res);
+            commit('setIsLoadingAllPrompts', false);
             commit('setAllPrompts', res.prompts);
         });
         socket.on('client:prompts:delete_complete', (res) => {
             console.log('client:prompts:delete_complete', res);
-            if (res.prompt_id === state.current_prompt.id) {
-                commit('setPromptData', NEW_PROMPT);
+            if (res.status === 'success') {
+                if (parseInt(res.prompt_id) === state.current_prompt.id) {
+                    // Deleted active prompt
+                    dispatch('newPrompt');
+                }
+
+                dispatch('getAllPrompts');
+                dispatch('notifications/success', 'Prompt deleted.', { root: true });
+            } else {
+                dispatch('notifications/error', 'Failed to delete prompt.', { root: true });
             }
-            commit('setRemovePrompt', res.prompt_id);
         });
     },
 
@@ -68,8 +75,8 @@ const actions = {
      * @param context
      * @param prompt_id
      */
-    getPromptById: (context, prompt_id) => {
-        context.commit('setIsLoading', true);
+    loadPromptById: (context, prompt_id) => {
+        context.commit('setIsLoadingSingle', true);
         socket.emit('server:prompts:get:single_by_id', { prompt_id });
     },
 
@@ -78,7 +85,7 @@ const actions = {
      * @param prompt_id
      */
     getRecentPrompt: (context) => {
-        context.commit('setIsLoading', true);
+        context.commit('setIsLoadingSingle', true);
         socket.emit('server:prompts:get:single_most_recent');
     },
 
@@ -95,9 +102,13 @@ const actions = {
             method: method,
         });
     },
-    clonePrompt: (context) => {
-        console.log('clonePrompt called');
-        context.dispatch('notifications/success', 'Created copy of prompt.', { root: true });
+    clonePrompt: ({ commit, dispatch, state }) => {
+        commit('setPromptData', {
+            id: 0,
+            prompt_text: state.current_prompt.prompt_text,
+            prompt_type: state.current_prompt.prompt_type,
+        });
+        dispatch('notifications/success', 'Created copy of prompt.', { root: true });
     },
     getAllPrompts: (context) => {
         context.commit('setIsLoadingAllPrompts', true);
@@ -109,17 +120,20 @@ const actions = {
     deletePrompt(context, prompt_id) {
         socket.emit('server:prompts:delete:single_by_id', { prompt_id });
     },
+    newPrompt({ commit }) {
+        commit('setPromptData', { ...NEW_PROMPT });
+    },
 };
 const mutations = {
     setPromptData(state, data) {
         state.current_prompt = {
             id: data.id,
-            type: data.prompt_type,
-            text: data.prompt_text,
+            prompt_type: data.prompt_type,
+            prompt_text: data.prompt_text,
         };
     },
-    setIsLoading(state, isLoading) {
-        state.is_loading = isLoading;
+    setIsLoadingSingle(state, isLoading) {
+        state.is_loading_single = isLoading;
     },
     setIsSaving(state, isSaving) {
         state.is_saving = isSaving;
@@ -145,9 +159,6 @@ const mutations = {
     },
     setIsPromptModalVisible(state, isModalVisible) {
         state.is_prompt_modal_visible = isModalVisible;
-    },
-    setRemovePrompt(state, prompt_id) {
-        state.all_prompts = state.all_prompts.filter((prompt) => prompt.id !== prompt_id);
     },
 };
 

@@ -1,30 +1,33 @@
 <template>
-    <div class="">
-        <button class="btn btn-secondary m-1" @click="toggleIsPromptModalVisible">
-            <FontAwesomeIcon :icon="faFolderOpen" />
-            Browse
-        </button>
-        <button class="btn btn-secondary m-1" @click="clonePrompt">
-            <FontAwesomeIcon :icon="faClone" />
-            Copy Prompt
-        </button>
-        <button class="btn btn-secondary m-1">
-            <FontAwesomeIcon :icon="faPlus" />
-            New Prompt
-        </button>
-    </div>
-    <div>
-        <textarea
-            class="form-control"
-            id="js-fv-prompt"
-            v-model="current_prompt.text"
-            :disabled="is_saving"
-        ></textarea>
-    </div>
-    <div>
-        <button class="btn btn-secondary m-1" @click="savePrompt">
-            <FontAwesomeIcon :icon="faFloppyDisk" />
-        </button>
+    <div class="ctk-prompt-editor-top-loading" v-if="is_loading_single">Loading...</div>
+    <div class="ctk-prompt-editor-top-wrapper" v-if="!is_loading_single">
+        <div class="">
+            <button class="btn btn-secondary m-1" @click="toggleIsPromptModalVisible">
+                <FontAwesomeIcon :icon="faFolderOpen" />
+                Browse
+            </button>
+            <button class="btn btn-secondary m-1" @click="clonePrompt">
+                <FontAwesomeIcon :icon="faClone" />
+                Copy Prompt
+            </button>
+            <button class="btn btn-secondary m-1" @click="newPrompt">
+                <FontAwesomeIcon :icon="faPlus" />
+                New Prompt
+            </button>
+        </div>
+        <div>
+            <textarea
+                class="form-control"
+                id="js-fv-prompt"
+                v-model="current_prompt.prompt_text"
+                :disabled="is_saving"
+            ></textarea>
+        </div>
+        <div>
+            <button class="btn btn-secondary m-1" @click="savePrompt">
+                <FontAwesomeIcon :icon="faFloppyDisk" />
+            </button>
+        </div>
     </div>
 </template>
 <script>
@@ -38,12 +41,14 @@ export default {
     computed: mapState({
         current_prompt: (state) => state.prompts.current_prompt,
         is_saving: (state) => state.prompts.is_saving,
+        is_loading_single: (state) => state.prompts.is_loading_single,
     }),
     methods: {
         ...mapActions({
             savePrompt: 'prompts/savePrompt',
             clonePrompt: 'prompts/clonePrompt',
             toggleIsPromptModalVisible: 'prompts/togglePromptModalVisible',
+            newPrompt: 'prompts/newPrompt',
         }),
     },
     watch: {},

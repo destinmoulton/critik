@@ -13,12 +13,14 @@ module.exports = (io, socket, db) => {
     socket.on('server:prompts:get:single_by_id', async (params) => {
         console.log('socket.io : server:prompts:get:single_by_id', params);
 
-        socket.emit('client:prompts:got:single', { status });
+        const prompt = await db.models.prompts.getSingleById(params.prompt_id);
+        socket.emit('client:prompts:got:single', { status: 'success', prompt });
     });
     socket.on('server:prompts:get:all_prompts', async (params) => {
         console.log('socket.io : server:prompts:get:all_prompts', params);
 
         let prompts = await db.models.prompts.getAllRows(params.order_by, params.order);
+        console.log('socket.io : server:prompts:get:all_prompts', prompts);
         if (null === prompts || undefined === prompts) {
             prompts = [];
         } else if (!Array.isArray(prompts)) {
@@ -48,8 +50,8 @@ module.exports = (io, socket, db) => {
         let error = '';
         let res = {};
         const data = {
-            prompt_type: params.prompt.type,
-            prompt_text: params.prompt.text
+            prompt_type: params.prompt.prompt_type,
+            prompt_text: params.prompt.prompt_text
         };
         if ('new' === params.method) {
             res = await db.models.prompts.insertRow(data);
@@ -78,9 +80,9 @@ module.exports = (io, socket, db) => {
         });
     });
     socket.on('server:prompts:delete:single_by_id', async (params) => {
-
         const res = await db.models.prompts.deleteRowById(params.prompt_id);
-        const prompt_id = res;
-        socket.emit('client:prompts:delete_complete', { prompt_id });
+        const status = res ? 'success' : 'error';
+
+        socket.emit('client:prompts:delete_complete', { prompt_id: params.prompt_id, status });
     });
 };

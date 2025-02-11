@@ -19,24 +19,39 @@
                     ></button>
                 </div>
                 <div class="modal-body">
-                    <div
-                        class="card text-center"
-                        v-if="all_prompts.length === 0"
-                        :key="all_prompts.length"
-                    >
-                        No prompts found.
-                    </div>
-                    <div class="card col-4" v-for="prompt in all_prompts" :key="prompt.id">
-                        <div class="card-body">
-                            <p class="card-text">{{ prompt.prompt_text }}</p>
-                            <button
-                                class="btn btn-secondary btn-sm card-link"
-                                :data-ctk-prompt-id="prompt.id"
-                                @click="confirmDeletePrompt"
+                    <div class="container">
+                        <div class="row">
+                            <div class="card text-center" v-if="is_loading_all_prompts">
+                                Loading...
+                            </div>
+                            <div
+                                class="card text-center"
+                                v-if="all_prompts.length === 0"
+                                :key="all_prompts.length"
                             >
-                                <FontAwesomeIcon :icon="faTrashCan" />
-                                Delete
-                            </button>
+                                No prompts found.
+                            </div>
+                            <div class="card col-4" v-for="prompt in all_prompts" :key="prompt.id">
+                                <div class="card-body">
+                                    <p class="card-text">{{ prompt.prompt_text }}</p>
+                                    <button
+                                        class="btn btn-secondary btn-sm card-link"
+                                        :data-ctk-prompt-id="prompt.id"
+                                        @click="confirmDeletePrompt"
+                                    >
+                                        <FontAwesomeIcon :icon="faTrashCan" />
+                                        Delete
+                                    </button>
+                                    <button
+                                        class="btn btn-secondary btn-sm card-link"
+                                        :data-ctk-prompt-id="prompt.id"
+                                        @click="loadPrompt"
+                                    >
+                                        <FontAwesomeIcon :icon="faArrowsTurnRight" />
+                                        Load
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -49,6 +64,7 @@
 import { mapState, mapActions } from 'vuex';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
+import { faArrowsTurnRight } from '@fortawesome/free-solid-svg-icons';
 import { Modal } from 'bootstrap';
 
 export default {
@@ -62,6 +78,7 @@ export default {
         ...mapActions({
             toggleIsPromptModalVisible: 'prompts/togglePromptModalVisible',
             deletePrompt: 'prompts/deletePrompt',
+            loadPromptById: 'prompts/loadPromptById',
         }),
         confirmDeletePrompt(e) {
             const prompt_id = e.target.getAttribute('data-ctk-prompt-id');
@@ -70,6 +87,11 @@ export default {
             if (resp) {
                 this.deletePrompt(prompt_id);
             }
+        },
+        loadPrompt(e) {
+            const prompt_id = e.target.getAttribute('data-ctk-prompt-id');
+            this.loadPromptById(prompt_id);
+            this.toggleIsPromptModalVisible();
         },
     },
     watch: {
@@ -91,6 +113,7 @@ export default {
     setup() {
         return {
             faTrashCan,
+            faArrowsTurnRight,
         };
     },
 };

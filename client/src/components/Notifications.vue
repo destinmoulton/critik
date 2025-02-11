@@ -9,7 +9,13 @@
             :key="notification.id"
             :data-ctk-notification-id="notification.id"
         >
-            <div class="toast-header justify-content-end">
+            <div class="toast-header">
+                <span class="ctk-notification-header-error" v-if="notification.type === 'error'"
+                    >Error!</span
+                >
+                <span class="ctk-notification-header-success" v-if="notification.type === 'success'"
+                    >Success!</span
+                >
                 <button
                     type="button"
                     class="btn-close"
@@ -17,7 +23,7 @@
                     aria-label="Close"
                 ></button>
             </div>
-            <div class="toast-body">{{ notification.msg }}{{ notification.id }}</div>
+            <div class="toast-body">{{ notification.msg }}</div>
         </div>
     </div>
 </template>
@@ -37,7 +43,7 @@ export default {
                 var toastElList = [].slice.call(document.querySelectorAll('.toast'));
                 console.log('displayToasts', toastElList);
                 const config = {
-                    autohide: false,
+                    autohide: true,
                     delay: 8000,
                 };
                 for (const toastEl of toastElList) {
@@ -74,5 +80,17 @@ export default {
     position: fixed !important;
     bottom: 10px;
     right: 10px;
+}
+
+.ctk-notification-header-error {
+    color: maroon;
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.ctk-notification-header-success {
+    color: seagreen;
+    font-size: 1.3rem;
+    font-weight: bold;
 }
 </style>

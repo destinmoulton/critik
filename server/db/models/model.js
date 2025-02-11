@@ -50,7 +50,7 @@ class Model {
     }
 
     async getAllRows(orderBy, orderDirection) {
-        return await this._db.get(`SELECT *
+        return await this._db.all(`SELECT *
                                    FROM ${this._table_name}
                                    ORDER BY ${orderBy} ${orderDirection}`);
     }
@@ -147,7 +147,11 @@ class Model {
                        FROM ${this._table_name}
                        WHERE ${this._primary_key} = ?`;
         const res = await this._db.run(query, id);
-        return res.lastID;
+        console.log('deleteRowById', res);
+        if (!Object.hasOwn(res, 'changes')) {
+            return false;
+        }
+        return res.changes > 0;
     }
 
     hasPrimaryKey() {
