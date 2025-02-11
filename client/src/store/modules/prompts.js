@@ -54,6 +54,7 @@ const actions = {
             commit('setIsLoadingAllPrompts', false);
             commit('setAllPrompts', res.prompts);
         });
+
         socket.on('client:prompts:delete_complete', (res) => {
             console.log('client:prompts:delete_complete', res);
             if (res.status === 'success') {

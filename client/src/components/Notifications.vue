@@ -86,11 +86,13 @@ export default {
     color: maroon;
     font-size: 1.3rem;
     font-weight: bold;
+    width: 100%;
 }
 
 .ctk-notification-header-success {
     color: seagreen;
     font-size: 1.3rem;
     font-weight: bold;
+    width: 100%;
 }
 </style>
