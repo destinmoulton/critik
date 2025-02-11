@@ -35,7 +35,7 @@ module.exports = (io, socket, db) => {
             // Set blank one
             recent = {
                 id: 0,
-                prompt_type: 'user',
+                prompt_role: 'user',
                 prompt_text: ''
             };
         }
@@ -50,7 +50,7 @@ module.exports = (io, socket, db) => {
         let error = '';
         let res = {};
         const data = {
-            prompt_type: params.prompt.prompt_type,
+            prompt_role: params.prompt.prompt_role,
             prompt_text: params.prompt.prompt_text
         };
         if ('new' === params.method) {

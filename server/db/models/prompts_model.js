@@ -10,7 +10,7 @@ class PromptsModel extends Model {
         this._create_query = `CREATE TABLE ${this._table_name}
                               (
                                   id          INTEGER PRIMARY KEY AUTOINCREMENT,
-                                  prompt_type TEXT NOT NULL,
+                                  prompt_role TEXT NOT NULL,
                                   prompt_text TEXT NOT NULL,
                                   created     DATETIME DEFAULT CURRENT_TIMESTAMP
                               )`;

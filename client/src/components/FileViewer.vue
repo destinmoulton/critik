@@ -29,21 +29,35 @@ export default {
     methods: {
         ...mapActions({}),
         initialize_viewer_actions() {
+            const viewerEl = document.querySelector('#js-fv-html');
+            const header = document.querySelector('#js-ctk-header');
+
+            const contentHeight = window.innerHeight - header.offsetHeight + 'px';
+            viewerEl.style.height = contentHeight;
             this.$nextTick(() => {
-                const viewerEl = document.querySelector('#js-fv-html');
                 const els = viewerEl.querySelectorAll('p');
 
-                console.log('initialize_viewer_actions', els);
                 for (const el of els) {
                     el.classList.add('ctk-fv-paragraph');
-                    el.addEventListener('mouseover', () => {
-                        el.classList.add('ctk-fv-paragraph-hover');
+                    el.addEventListener('mouseover', (e) => {
+                        e.target.classList.add('ctk-fv-paragraph-hover');
                     });
-                    el.addEventListener('mouseout', () => {
-                        el.classList.remove('ctk-fv-paragraph-hover');
+                    el.addEventListener('mouseout', (e) => {
+                        e.target.classList.remove('ctk-fv-paragraph-hover');
+                    });
+                    el.addEventListener('click', (e) => {
+                        this.deactivate_all_paragraphs();
+                        e.target.classList.add('ctk-fv-paragraph-active');
                     });
                 }
             });
+        },
+        deactivate_all_paragraphs() {
+            const viewerEl = document.querySelector('#js-fv-html');
+            const els = viewerEl.querySelectorAll('p');
+            for (const el of els) {
+                el.classList.remove('ctk-fv-paragraph-active');
+            }
         },
     },
     watch: {
@@ -62,6 +76,8 @@ export default {
 </script>
 <style>
 .ctk-fv-wrapper {
+    overflow: scroll;
+    overflow-x: hidden;
 }
 
 .ctk-fv-wrapper p {
@@ -72,6 +88,10 @@ export default {
 
 .ctk-fv-wrapper p.ctk-fv-paragraph-hover {
     border: 1px solid green;
+}
+
+.ctk-fv-wrapper p.ctk-fv-paragraph-active {
+    background-color: khaki;
 }
 
 .ctk-fv-wrapper p.ctk-fv-paragraph {

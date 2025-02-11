@@ -2,7 +2,7 @@ import { socket } from '@/socket';
 
 const NEW_PROMPT = {
     id: 0,
-    prompt_type: 'user',
+    prompt_role: 'user',
     prompt_text: '',
 };
 const state = () => ({
@@ -107,7 +107,7 @@ const actions = {
         commit('setPromptData', {
             id: 0,
             prompt_text: state.current_prompt.prompt_text,
-            prompt_type: state.current_prompt.prompt_type,
+            prompt_role: state.current_prompt.prompt_role,
         });
         dispatch('notifications/success', 'Created copy of prompt.', { root: true });
     },
@@ -129,7 +129,7 @@ const mutations = {
     setPromptData(state, data) {
         state.current_prompt = {
             id: data.id,
-            prompt_type: data.prompt_type,
+            prompt_role: data.prompt_role,
             prompt_text: data.prompt_text,
         };
     },
